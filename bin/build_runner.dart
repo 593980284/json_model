@@ -17,12 +17,20 @@ import 'package:build_runner/src/logging/std_io_logging.dart';
 
 import 'src/commands/clean.dart';
 import 'src/commands/generate_build_script.dart';
+import 'package:build_runner_core/src/package_graph/package_graph.dart';
 
 Future<void> run(List<String> args) async {
   // Use the actual command runner to parse the args and immediately print the
   // usage information if there is no command provided or the help command was
   // explicitly invoked.
-  var commandRunner = BuildCommandRunner([]);
+  PackageGraph a;
+  try {
+    a = await PackageGraph.forThisPackage();
+  } catch (e) {
+    //错误处理
+    print(e);
+  }
+  var commandRunner = BuildCommandRunner([], a);
   var localCommands = [CleanCommand(), GenerateBuildScript()];
   var localCommandNames = localCommands.map((c) => c.name).toSet();
   localCommands.forEach(commandRunner.addCommand);
